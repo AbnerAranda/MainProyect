@@ -22,21 +22,45 @@ MainFrame::MainFrame(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //labels and inputs
-    QLabel *exomodeLabel = new QLabel(tr("EXOMODE: "));
-    exomodeInput = new QLineEdit;
-    QLabel *displayLabel = new QLabel(tr("DISPLAY: "));
-    displayInput = new QLineEdit;
-    QLabel *logfileLabel = new QLabel(tr("LOGFILE: "));
-    logfileInput = new QLineEdit;
-    /*QLabel *outdirLabel = new QLabel(tr("OUTDIR: "));
-    outdirInput = new QLineEdit;
-    QLabel *ntsaveLabel = new QLabel(tr("NTSAVE: "));
-    ntsaveInput = new QLineEdit;
-    QLabel *dtsaveLabel = new QLabel(tr("DTSAVE: "));
-    dtsaveInput = new QLineEdit;
-    QLabel *modelLabel = new QLabel(tr("MODEL: "));
-    modelInput = new QLineEdit;*/
+    //Label list
+    labelList[0] = new QLabel(tr("EXOMODE: "));
+    labelList[1] = new QLabel(tr("DISPLAY: "));
+    labelList[2] = new QLabel(tr("LOGFILE: "));
+    labelList[3] = new QLabel(tr("OUTDIR: "));
+    labelList[4] = new QLabel(tr("NTSAVE: "));
+    labelList[5] = new QLabel(tr("DTSAVE: "));
+    labelList[6] = new QLabel(tr("MODEL: "));
+    labelList[7] = new QLabel(tr("DIMENSIONS: "));
+    labelList[8] = new QLabel(tr("METHOD: "));
+    labelList[9] = new QLabel(tr("FEMORD: "));
+    labelList[10] = new QLabel(tr("MESHTYPE: "));
+    labelList[11] = new QLabel(tr("SAVEMESH: "));
+    labelList[12] = new QLabel(tr("DGTYPE: "));
+    labelList[13] = new QLabel(tr("DGPENALTY: "));
+    labelList[14] = new QLabel(tr("DGLUMPPING: "));
+    numOfVar = sizeof(labelList)/sizeof(QLabel*);
+
+    //main scroll area
+    QScrollArea *scrollArea = new QScrollArea;
+    scrollArea->setWidgetResizable(true);
+
+    //widget that holds the scroll area
+    scrollWidget = new QWidget;
+    scrollLayout = new QVBoxLayout(scrollWidget);
+    scrollArea->setWidget(scrollWidget);
+    scrollWidget->setLayout(scrollLayout);
+    scrollArea->setStyleSheet("QScrollBar:horizontal { width: 5px; }");
+
+    //layouts inside the scroll area
+    for(int i = 0; i < numOfVar; i++){
+        entries[i] = new QWidget(scrollWidget);
+        layouts[i] = new QHBoxLayout(entries[i]);
+        label[i] = labelList[i];
+        inputs[i] = new QLineEdit;
+        layouts[i]->addWidget(label[i]);
+        layouts[i]->addWidget(inputs[i]);
+        scrollLayout->addWidget(entries[i]);
+    }
 
     //buttons
     selectButton = new QPushButton(tr("Select File"));
@@ -51,53 +75,6 @@ MainFrame::MainFrame(QWidget *parent)
     QHBoxLayout *selectLayout = new QHBoxLayout;
     selectLayout->addWidget(selectButton);
 
-    QScrollArea *scroll = new QScrollArea;
-
-    QVBoxLayout *scrollLayout = new QVBoxLayout;
-
-    QHBoxLayout *exomodeLayout = new QHBoxLayout;
-    exomodeLayout->addWidget(exomodeLabel);
-    exomodeLayout->addWidget(exomodeInput);
-
-    QHBoxLayout *displayLayout = new QHBoxLayout;
-    displayLayout->addWidget(displayLabel);
-    displayLayout->addWidget(displayInput);
-
-    QHBoxLayout *logfileLayout = new QHBoxLayout;
-    displayLayout->addWidget(logfileLabel);
-    displayLayout->addWidget(logfileInput);
-
-    /*QHBoxLayout *outdirLayout = new QHBoxLayout;
-    displayLayout->addWidget(outdirLabel);
-    displayLayout->addWidget(outdirInput);
-
-    QHBoxLayout *ntsaveLayout = new QHBoxLayout;
-    displayLayout->addWidget(ntsaveLabel);
-    displayLayout->addWidget(ntsaveInput);
-
-    QHBoxLayout *dtsaveLayout = new QHBoxLayout;
-    displayLayout->addWidget(dtsaveLabel);
-    displayLayout->addWidget(dtsaveInput);
-
-    QHBoxLayout *modelLayout = new QHBoxLayout;
-    displayLayout->addWidget(modelLabel);
-    displayLayout->addWidget(modelInput);*/
-
-    scrollLayout->addLayout(exomodeLayout);
-    scrollLayout->addLayout(displayLayout);
-    scrollLayout->addLayout(logfileLayout);
-    //scrollLayout->addLayout(outdirLayout);
-    //scrollLayout->addLayout(ntsaveLayout);
-    //scrollLayout->addLayout(dtsaveLayout);
-    //scrollLayout->addLayout(modelLayout);
-
-
-    QWidget *widget = new QWidget;
-    widget->setLayout(scrollLayout);
-    scroll->setWidget(widget);
-    scroll->setStyleSheet("QScrollBar:horizontal { width: 5px; }");
-    //scroll->setStyleSheet("QScrollBar:vertical { width: 5px; }");
-
     QHBoxLayout *saveNewLayout = new QHBoxLayout;
     saveNewLayout->addWidget(saveButton);
     saveNewLayout->addWidget(newButton);
@@ -105,7 +82,7 @@ MainFrame::MainFrame(QWidget *parent)
     //main layout
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addLayout(selectLayout);
-    mainLayout->addWidget(scroll);
+    mainLayout->addWidget(scrollArea);
     mainLayout->addLayout(saveNewLayout);
 
     setLayout(mainLayout);
@@ -116,25 +93,10 @@ void MainFrame::saveFile(){
     QString fileName = QFileDialog::getOpenFileName(this, "Open a file", "/Users/abner/");
     QFile data(fileName);
     data.open(QFile::WriteOnly|QFile::Truncate);
-
-    QString printEXOMODE;
-    QString printDISPLAY;
-
-    printEXOMODE = "EXOMODE: " + exomodeInput->displayText() + "\n";
-    printDISPLAY = "DISPLAY: " + displayInput->displayText() + "\n";
-    QString printText = printEXOMODE + printDISPLAY;
-
-    QTextStream out(&data);
-    out << printText;
+    print(&data);
 }
 
 void MainFrame::newFile(){
-    QString printEXOMODE;
-    QString printDISPLAY;
-
-    printEXOMODE = "EXOMODE: " + exomodeInput->displayText() + "\n";
-    printDISPLAY = "DISPLAY: " + displayInput->displayText() + "\n";
-    QString printText = printEXOMODE + printDISPLAY;
 
     QString fileName = QFileDialog::getSaveFileName(this,tr("Save Text"), "",tr("Text (*.txt);;All Files (*)"));
 
@@ -147,8 +109,7 @@ void MainFrame::newFile(){
                         file.errorString());
                         return;
                     }
-                    QTextStream out(&file);
-                    out << printText;
+                    print(&file);
                 }
 }
 
@@ -158,18 +119,26 @@ void MainFrame::openFile(){
     data.open(QFile::ReadOnly);
 
     QTextStream in(&data);
-    QString line[2];
-    QString inputs[2];
-    QString outputs[2];
-    for(int i=0; i<2; i++)
+    QString line[numOfVar];
+    QString inp[numOfVar];
+    QString outputs[numOfVar];
+    for(int i=0; i<numOfVar; i++)
     {
         line[i]  = in.readLine();
-        inputs[i].append(line[i]);
-        QStringList partString = inputs[i].split(": ");
+        inp[i].append(line[i]);
+        QStringList partString = inp[i].split(": ");
         outputs[i] = partString.at(1);
+        inputs[i]->setText(outputs[i]);
     }
-    exomodeInput->setText(outputs[0]);
-    displayInput->setText(outputs[1]);
+}
+
+void MainFrame::print(QFile *qfile){
+    QString printX;
+    for(int i=0; i<numOfVar; i++){
+        printX = printX + label[i]->text() + inputs[i]->displayText() + "\n";
+    }
+    QTextStream out(qfile);
+    out << printX;
 }
 
 MainFrame::~MainFrame()
