@@ -15,6 +15,9 @@
 #include <iostream>
 #include <QFile>
 #include <QScrollArea>
+#include <QList>
+#include <QComboBox>
+#include <string.h>
 
 MainFrame::MainFrame(QWidget *parent)
     : QWidget(parent)
@@ -22,23 +25,8 @@ MainFrame::MainFrame(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //Label list
-    labelList[0] = new QLabel(tr("EXOMODE: "));
-    labelList[1] = new QLabel(tr("DISPLAY: "));
-    labelList[2] = new QLabel(tr("LOGFILE: "));
-    labelList[3] = new QLabel(tr("OUTDIR: "));
-    labelList[4] = new QLabel(tr("NTSAVE: "));
-    labelList[5] = new QLabel(tr("DTSAVE: "));
-    labelList[6] = new QLabel(tr("MODEL: "));
-    labelList[7] = new QLabel(tr("DIMENSIONS: "));
-    labelList[8] = new QLabel(tr("METHOD: "));
-    labelList[9] = new QLabel(tr("FEMORD: "));
-    labelList[10] = new QLabel(tr("MESHTYPE: "));
-    labelList[11] = new QLabel(tr("SAVEMESH: "));
-    labelList[12] = new QLabel(tr("DGTYPE: "));
-    labelList[13] = new QLabel(tr("DGPENALTY: "));
-    labelList[14] = new QLabel(tr("DGLUMPPING: "));
-    numOfVar = sizeof(labelList)/sizeof(QLabel*);
+    //number of variables
+    numOfVar = sizeof(listOfVar)/sizeof(const char*);
 
     //main scroll area
     QScrollArea *scrollArea = new QScrollArea;
@@ -52,14 +40,152 @@ MainFrame::MainFrame(QWidget *parent)
     scrollArea->setStyleSheet("QScrollBar:horizontal { width: 5px; }");
 
     //layouts inside the scroll area
+    int lineCount = 0;
+    int dropCount = 0;
     for(int i = 0; i < numOfVar; i++){
         entries[i] = new QWidget(scrollWidget);
         layouts[i] = new QHBoxLayout(entries[i]);
-        label[i] = labelList[i];
-        inputs[i] = new QLineEdit;
-        layouts[i]->addWidget(label[i]);
-        layouts[i]->addWidget(inputs[i]);
-        scrollLayout->addWidget(entries[i]);
+        label[i] = new QLabel(tr(listOfVar[i]));
+        //if for both qline and qcombobox
+        if(strcmp(listOfVar[i],"EXOMODE: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("0");
+            dropInputs[i-lineCount]->addItem("1");
+            dropInputs[i-lineCount]->addItem("2");
+            dropInputs[i-lineCount]->addItem("3");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"DISPLAY: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("0");
+            dropInputs[i-lineCount]->addItem("1");
+            dropInputs[i-lineCount]->addItem("2");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"MODEL: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("Acustic");
+            dropInputs[i-lineCount]->addItem("Elastic");
+            dropInputs[i-lineCount]->addItem("Frac");
+            dropInputs[i-lineCount]->addItem("Elastoacust");
+            dropInputs[i-lineCount]->addItem("Anisotropic");
+            dropInputs[i-lineCount]->addItem("Aniso+Frac");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"METHOD: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("SGFD");
+            dropInputs[i-lineCount]->addItem("SEM");
+            dropInputs[i-lineCount]->addItem("DG");
+            dropInputs[i-lineCount]->addItem("IGA");
+            dropInputs[i-lineCount]->addItem("VSFD");
+            dropInputs[i-lineCount]->addItem("EG");
+            dropInputs[i-lineCount]->addItem("HEG");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"MESHTYPE: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("0");
+            dropInputs[i-lineCount]->addItem("4");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"SAVEMESH: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("no");
+            dropInputs[i-lineCount]->addItem("yes");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"TSMETHOD: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("FDM");
+            dropInputs[i-lineCount]->addItem("RK4");
+            dropInputs[i-lineCount]->addItem("LW4");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"FREESURF: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("no");
+            dropInputs[i-lineCount]->addItem("yes");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"BC: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("Neumann");
+            dropInputs[i-lineCount]->addItem("Taper");
+            dropInputs[i-lineCount]->addItem("Periodic");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"SRCTYPE: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("pint src");
+            dropInputs[i-lineCount]->addItem("compressional plane wave");
+            dropInputs[i-lineCount]->addItem("shear plane wave");
+            dropInputs[i-lineCount]->addItem("3");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"SAVESRC: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("no");
+            dropInputs[i-lineCount]->addItem("yes");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"SNAPSHFMT: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("None");
+            dropInputs[i-lineCount]->addItem("Binary");
+            dropInputs[i-lineCount]->addItem("NetCDF");
+            dropInputs[i-lineCount]->addItem("Slice");
+            dropInputs[i-lineCount]->addItem("VTK");
+            dropInputs[i-lineCount]->addItem("Exodus II ");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"DXUSEIS: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("displacement seismograms");
+            dropInputs[i-lineCount]->addItem("X-derivative seismograms");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else if(strcmp(listOfVar[i],"BLOCKTYPE_1: ") == 0){
+            dropInputs[i-lineCount] = new QComboBox;
+            dropInputs[i-lineCount]->addItem("layer");
+            dropInputs[i-lineCount]->addItem("blk");
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(dropInputs[i-lineCount]);
+            scrollLayout->addWidget(entries[i]);
+            dropCount++;
+        }else{
+            lineInputs[i-dropCount] = new QLineEdit;
+            layouts[i]->addWidget(label[i]);
+            layouts[i]->addWidget(lineInputs[i-dropCount]);
+            scrollLayout->addWidget(entries[i]);
+            lineCount++;
+        }
     }
 
     //buttons
@@ -122,20 +248,47 @@ void MainFrame::openFile(){
     QString line[numOfVar];
     QString inp[numOfVar];
     QString outputs[numOfVar];
+    int lineCount = 0;
+    int dropCount = 0;
     for(int i=0; i<numOfVar; i++)
     {
         line[i]  = in.readLine();
         inp[i].append(line[i]);
         QStringList partString = inp[i].split(": ");
         outputs[i] = partString.at(1);
-        inputs[i]->setText(outputs[i]);
+        if((strcmp(listOfVar[i],"EXOMODE: ") == 0)||(strcmp(listOfVar[i],"DISPLAY: ") == 0)||(strcmp(listOfVar[i],"MODEL: ") == 0)
+                ||(strcmp(listOfVar[i],"METHOD: ") == 0)||(strcmp(listOfVar[i],"MESHTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVEMESH: ") == 0)
+                ||(strcmp(listOfVar[i],"TSMETHOD: ") == 0)||(strcmp(listOfVar[i],"FREESURF: ") == 0)||(strcmp(listOfVar[i],"BC: ") == 0)
+                ||(strcmp(listOfVar[i],"SRCTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVESRC: ") == 0)||(strcmp(listOfVar[i],"SNAPSHFMT: ") == 0)
+                ||(strcmp(listOfVar[i],"DXUSEIS: ") == 0)||(strcmp(listOfVar[i],"BLOCKTYPE_1: ") == 0)){
+            int index = outputs[i].toInt();
+            //dropInputs[i-lineCount]->setCurrentText(outputs[i]);
+            dropInputs[i-lineCount]->setCurrentIndex(index);
+            dropCount++;
+        }else{
+            lineInputs[i-dropCount]->setText(outputs[i]);
+            lineCount++;
+        }
     }
 }
 
 void MainFrame::print(QFile *qfile){
     QString printX;
+    int lineCount = 0;
+    int dropCount = 0;
     for(int i=0; i<numOfVar; i++){
-        printX = printX + label[i]->text() + inputs[i]->displayText() + "\n";
+        if((strcmp(listOfVar[i],"EXOMODE: ") == 0)||(strcmp(listOfVar[i],"DISPLAY: ") == 0)||(strcmp(listOfVar[i],"MODEL: ") == 0)
+                ||(strcmp(listOfVar[i],"METHOD: ") == 0)||(strcmp(listOfVar[i],"MESHTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVEMESH: ") == 0)
+                ||(strcmp(listOfVar[i],"TSMETHOD: ") == 0)||(strcmp(listOfVar[i],"FREESURF: ") == 0)||(strcmp(listOfVar[i],"BC: ") == 0)
+                ||(strcmp(listOfVar[i],"SRCTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVESRC: ") == 0)||(strcmp(listOfVar[i],"SNAPSHFMT: ") == 0)
+                ||(strcmp(listOfVar[i],"DXUSEIS: ") == 0)||(strcmp(listOfVar[i],"BLOCKTYPE_1: ") == 0)){ 
+            int index = dropInputs[i-lineCount]->currentIndex();
+            printX = printX + label[i]->text() + QString::number(index) + "\n";
+            dropCount++;
+        }else{
+            printX = printX + label[i]->text() + lineInputs[i-dropCount]->displayText() + "\n";
+            lineCount++;
+        }
     }
     QTextStream out(qfile);
     out << printX;
