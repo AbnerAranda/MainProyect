@@ -46,145 +46,63 @@ MainFrame::MainFrame(QWidget *parent)
         entries[i] = new QWidget(scrollWidget);
         layouts[i] = new QHBoxLayout(entries[i]);
         label[i] = new QLabel(tr(listOfVar[i]));
-        //if for both qline and qcombobox
-        if(strcmp(listOfVar[i],"EXOMODE: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("0");
-            dropInputs[i-lineCount]->addItem("1");
-            dropInputs[i-lineCount]->addItem("2");
-            dropInputs[i-lineCount]->addItem("3");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+        //switch statement for qline and qcombobox
+        switch(i){
+        case 0:
+            printDropItems(exomodeEntries, exomodeSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"DISPLAY: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("0");
-            dropInputs[i-lineCount]->addItem("1");
-            dropInputs[i-lineCount]->addItem("2");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 1:
+            printDropItems(displayEntries, displaySize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"MODEL: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("Acustic");
-            dropInputs[i-lineCount]->addItem("Elastic");
-            dropInputs[i-lineCount]->addItem("Frac");
-            dropInputs[i-lineCount]->addItem("Elastoacust");
-            dropInputs[i-lineCount]->addItem("Anisotropic");
-            dropInputs[i-lineCount]->addItem("Aniso+Frac");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 6:
+            printDropItems(modelEntries, modelSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"METHOD: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("SGFD");
-            dropInputs[i-lineCount]->addItem("SEM");
-            dropInputs[i-lineCount]->addItem("DG");
-            dropInputs[i-lineCount]->addItem("IGA");
-            dropInputs[i-lineCount]->addItem("VSFD");
-            dropInputs[i-lineCount]->addItem("EG");
-            dropInputs[i-lineCount]->addItem("HEG");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 8:
+            printDropItems(methodEntries, methodSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"MESHTYPE: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("0");
-            dropInputs[i-lineCount]->addItem("4");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 10:
+            printDropItems(meshtypeEntries, meshtypeSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"SAVEMESH: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("no");
-            dropInputs[i-lineCount]->addItem("yes");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 11: case 22: case 28:
+            printDropItems(boolEntries, boolSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"TSMETHOD: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("FDM");
-            dropInputs[i-lineCount]->addItem("RK4");
-            dropInputs[i-lineCount]->addItem("LW4");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 19:
+            printDropItems(tsmethodEntries, tsmethodSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"FREESURF: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("no");
-            dropInputs[i-lineCount]->addItem("yes");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 23:
+            printDropItems(bcEntries, bcSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"BC: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("Neumann");
-            dropInputs[i-lineCount]->addItem("Taper");
-            dropInputs[i-lineCount]->addItem("Periodic");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 27:
+            printDropItems(srctypeEntries, srctypeSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"SRCTYPE: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("pint src");
-            dropInputs[i-lineCount]->addItem("compressional plane wave");
-            dropInputs[i-lineCount]->addItem("shear plane wave");
-            dropInputs[i-lineCount]->addItem("3");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 39:
+            printDropItems(snapshfmtEntries, snapshfmtSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"SAVESRC: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("no");
-            dropInputs[i-lineCount]->addItem("yes");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 40:
+            printDropItems(dxuseisEntries, dxuseisSize, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"SNAPSHFMT: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("None");
-            dropInputs[i-lineCount]->addItem("Binary");
-            dropInputs[i-lineCount]->addItem("NetCDF");
-            dropInputs[i-lineCount]->addItem("Slice");
-            dropInputs[i-lineCount]->addItem("VTK");
-            dropInputs[i-lineCount]->addItem("Exodus II ");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
+            break;
+        case 56:
+            printDropItems(blocktype_1Entries, blocktype_1Size, i, lineCount);
             dropCount++;
-        }else if(strcmp(listOfVar[i],"DXUSEIS: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("displacement seismograms");
-            dropInputs[i-lineCount]->addItem("X-derivative seismograms");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
-            dropCount++;
-        }else if(strcmp(listOfVar[i],"BLOCKTYPE_1: ") == 0){
-            dropInputs[i-lineCount] = new QComboBox;
-            dropInputs[i-lineCount]->addItem("layer");
-            dropInputs[i-lineCount]->addItem("blk");
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(dropInputs[i-lineCount]);
-            scrollLayout->addWidget(entries[i]);
-            dropCount++;
-        }else{
+            break;
+        default:
             lineInputs[i-dropCount] = new QLineEdit;
             layouts[i]->addWidget(label[i]);
             layouts[i]->addWidget(lineInputs[i-dropCount]);
             scrollLayout->addWidget(entries[i]);
             lineCount++;
+            break;
         }
     }
 
@@ -256,18 +174,18 @@ void MainFrame::openFile(){
         inp[i].append(line[i]);
         QStringList partString = inp[i].split(": ");
         outputs[i] = partString.at(1);
-        if((strcmp(listOfVar[i],"EXOMODE: ") == 0)||(strcmp(listOfVar[i],"DISPLAY: ") == 0)||(strcmp(listOfVar[i],"MODEL: ") == 0)
-                ||(strcmp(listOfVar[i],"METHOD: ") == 0)||(strcmp(listOfVar[i],"MESHTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVEMESH: ") == 0)
-                ||(strcmp(listOfVar[i],"TSMETHOD: ") == 0)||(strcmp(listOfVar[i],"FREESURF: ") == 0)||(strcmp(listOfVar[i],"BC: ") == 0)
-                ||(strcmp(listOfVar[i],"SRCTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVESRC: ") == 0)||(strcmp(listOfVar[i],"SNAPSHFMT: ") == 0)
-                ||(strcmp(listOfVar[i],"DXUSEIS: ") == 0)||(strcmp(listOfVar[i],"BLOCKTYPE_1: ") == 0)){
-            int index = outputs[i].toInt();
-            //dropInputs[i-lineCount]->setCurrentText(outputs[i]);
+        int index;
+        switch(i){
+        case 0: case 1: case 6: case 8: case 10: case 11: case 19:
+        case 22: case 23: case 27:case 28:case 39:case 40: case 56:
+            index = outputs[i].toInt();
             dropInputs[i-lineCount]->setCurrentIndex(index);
             dropCount++;
-        }else{
+            break;
+        default:
             lineInputs[i-dropCount]->setText(outputs[i]);
             lineCount++;
+            break;
         }
     }
 }
@@ -276,22 +194,70 @@ void MainFrame::print(QFile *qfile){
     QString printX;
     int lineCount = 0;
     int dropCount = 0;
+
     for(int i=0; i<numOfVar; i++){
-        if((strcmp(listOfVar[i],"EXOMODE: ") == 0)||(strcmp(listOfVar[i],"DISPLAY: ") == 0)||(strcmp(listOfVar[i],"MODEL: ") == 0)
-                ||(strcmp(listOfVar[i],"METHOD: ") == 0)||(strcmp(listOfVar[i],"MESHTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVEMESH: ") == 0)
-                ||(strcmp(listOfVar[i],"TSMETHOD: ") == 0)||(strcmp(listOfVar[i],"FREESURF: ") == 0)||(strcmp(listOfVar[i],"BC: ") == 0)
-                ||(strcmp(listOfVar[i],"SRCTYPE: ") == 0)||(strcmp(listOfVar[i],"SAVESRC: ") == 0)||(strcmp(listOfVar[i],"SNAPSHFMT: ") == 0)
-                ||(strcmp(listOfVar[i],"DXUSEIS: ") == 0)||(strcmp(listOfVar[i],"BLOCKTYPE_1: ") == 0)){ 
-            int index = dropInputs[i-lineCount]->currentIndex();
+        int index;
+        QString input;
+        QMessageBox errorMessage;
+        bool isInt;
+        switch(i){
+        case 0: case 1: case 6: case 8: case 10: case 11: case 19:
+        case 22: case 23: case 27:case 28:case 39:case 40: case 56:
+            index = dropInputs[i-lineCount]->currentIndex();
             printX = printX + label[i]->text() + QString::number(index) + "\n";
             dropCount++;
-        }else{
-            printX = printX + label[i]->text() + lineInputs[i-dropCount]->displayText() + "\n";
+            break;
+        case 4: case 7: case 9: case 13: case 17: case 20: case 21:
+        case 24: case 25: case 26: case 29 ... 34: case 38: case 41:
+        case 44: case 46: case 47: case 52 ... 55:
+            input = lineInputs[i-dropCount]->displayText();
+            isInt = checkInteger(input);
+            if(isInt){
+                printX = printX + label[i]->text() + input + "\n";
+                lineCount++;
+            }else{
+                errorMessage.setText("The variable "+label[i]->text()+" only recives integers");
+                errorMessage.exec();
+                return;
+            }
+            break;
+        default:
+            input = lineInputs[i-dropCount]->displayText();
+            printX = printX + label[i]->text() + input + "\n";
             lineCount++;
+            break;
         }
     }
     QTextStream out(qfile);
     out << printX;
+}
+
+void MainFrame::printDropItems(const char ** entry, int arraySize, int index, int lnCount){
+    dropInputs[index-lnCount] = new QComboBox;
+    for(int j = 0; j < arraySize; j++){
+        dropInputs[index-lnCount]->addItem(QString(entry[j]));
+    }
+    layouts[index]->addWidget(label[index]);
+    layouts[index]->addWidget(dropInputs[index-lnCount]);
+    scrollLayout->addWidget(entries[index]);
+}
+
+bool MainFrame::checkInteger(QString input){
+    //bool isNeg = false;
+    int itr = 0;
+    if(input.size() == 0){
+        return false;
+    }
+    if(input[0] == '-'){
+        //isNeg = true;
+        itr = 1;
+    }
+    for(int i=itr; i<input.size(); i++){
+        if(input[i]<'0' || input[i]>'9'){
+            return false;
+        }
+    }
+    return true;
 }
 
 MainFrame::~MainFrame()
