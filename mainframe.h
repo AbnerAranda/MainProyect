@@ -31,6 +31,7 @@ public slots:
    void print(QFile*);
    void printDropItems(const char **, int, int, int);
    bool checkInteger(QString);
+   //bool checkPositive(QString);
 
 private:
     Ui::MainFrame *ui;
@@ -38,16 +39,16 @@ private:
     QWidget *scrollWidget;
     int numOfVar;
     //list of variables
-    const char *listOfVar[57] = {"EXOMODE: "/*0*/,"DISPLAY: "/*1*/,"LOGFILE: "/*2*/,"OUTDIR: "/*3*/,"NTSAVE: "/*4*/,"DTSAVE: "/*5*/,
-                                 "MODEL: "/*6*/,"DIMENSIONS: "/*7*/,"METHOD: "/*8*/,"FEMORD: "/*9*/,"MESHTYPE: "/*10*/,"SAVEMESH: "/*11*/,
-                                 "DGTYPE: "/*12*/,"DGPENALTY: "/*13*/,"DGLUMPPING: "/*14*/,"BASISTYPE: "/*15*/, "DGPENVEL: "/*16*/,
-                                 "ENRICHORD: "/*17*/,"ENRICHTYPE: "/*18*/,"TSMETHOD: "/*19*/,"TMAX: "/*20*/,"CFL: "/*21*/,"FREESURF: "/*22*/,
-                                 "BC: "/*23*/,"TAPERLEN: "/*24*/,"TAPALPHA: "/*25*/,"TAPBETA: "/*26*/,"SRCTYPE: "/*27*/,"SAVESRC: "/*28*/,
-                                 "SRCFUNC: "/*29*/,"TWIDTH: "/*30*/,"SWIDTH: "/*31*/,"PKFREQ: "/*32*/,"SRCAMP: "/*33*/,"SHOTS: "/*34*/,
-                                 "SRCLOC: "/*35*/,"SRCVECTOR: "/*36*/,"SRCTENSOR: "/*37*/,"SNAPSHRES: "/*38*/,"SNAPSHFMT: "/*39*/,"DXUSEIS: "/*40*/,
-                                 "NREC: "/*41*/,"REC0: "/*42*/,"RECD: "/*43*/,"NSEISMO: "/*44*/,"SEISMO[i]: "/*45*/,"MESHFAC: "/*46*/,
-                                 "NBLOCKS: "/*47*/,"X_1: "/*48*/,"Y_1: "/*49*/,"Z_1: "/*50*/,"NELEM_1: "/*51*/,"VMAX_1: "/*52*/,"VP_1: "/*53*/,
-                                 "VS_1: "/*54*/,"RHO_1: "/*55*/,"BLOCKTYPE_1: "/*56*/};
+    const char *listOfVar[57] = {"EXOMODE = "/*0*/,"DISPLAY = "/*1*/,"LOGFILE = "/*2*/,"OUTDIR = "/*3*/,"NTSAVE = "/*4*/,"DTSAVE = "/*5*/,
+                                 "MODEL = "/*6*/,"DIMENSIONS = "/*7*/,"METHOD = "/*8*/,"FEMORD = "/*9*/,"MESHTYPE = "/*10*/,"SAVEMESH = "/*11*/,
+                                 "DGTYPE = "/*12*/,"DGPENALTY = "/*13*/,"DGLUMPPING = "/*14*/,"BASISTYPE = "/*15*/, "DGPENVEL = "/*16*/,
+                                 "ENRICHORD = "/*17*/,"ENRICHTYPE = "/*18*/,"TSMETHOD = "/*19*/,"TMAX = "/*20*/,"CFL = "/*21*/,"FREESURF = "/*22*/,
+                                 "BC = "/*23*/,"TAPERLEN = "/*24*/,"TAPALPHA = "/*25*/,"TAPBETA = "/*26*/,"SRCTYPE = "/*27*/,"SAVESRC = "/*28*/,
+                                 "SRCFUNC = "/*29*/,"TWIDTH = "/*30*/,"SWIDTH = "/*31*/,"PKFREQ = "/*32*/,"SRCAMP = "/*33*/,"SHOTS = "/*34*/,
+                                 "SRCLOC = "/*35*/,"SRCVECTOR = "/*36*/,"SRCTENSOR = "/*37*/,"SNAPSHRES = "/*38*/,"SNAPSHFMT = "/*39*/,"DXUSEIS = "/*40*/,
+                                 "NREC = "/*41*/,"REC0 = "/*42*/,"RECD = "/*43*/,"NSEISMO = "/*44*/,"SEISMO[i] =  "/*45*/,"MESHFAC = "/*46*/,
+                                 "NBLOCKS = "/*47*/,"X_1 = "/*48*/,"Y_1 = "/*49*/,"Z_1 = "/*50*/,"NELEM_1 = "/*51*/,"VMAX_1 = "/*52*/,"VP_1 = "/*53*/,
+                                 "VS_1 = "/*54*/,"RHO_1 = "/*55*/,"BLOCKTYPE_1 = "/*56*/};
     //Entries arrays
     const char *exomodeEntries[4] = {"0","1","2","3"};
     int exomodeSize = sizeof(exomodeEntries)/sizeof(const char*);

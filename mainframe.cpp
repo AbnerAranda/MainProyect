@@ -172,7 +172,7 @@ void MainFrame::openFile(){
     {
         line[i]  = in.readLine();
         inp[i].append(line[i]);
-        QStringList partString = inp[i].split(": ");
+        QStringList partString = inp[i].split(" = ");
         outputs[i] = partString.at(1);
         int index;
         switch(i){
@@ -200,6 +200,7 @@ void MainFrame::print(QFile *qfile){
         QString input;
         QMessageBox errorMessage;
         bool isInt;
+        //bool isPos;
         switch(i){
         case 0: case 1: case 6: case 8: case 10: case 11: case 19:
         case 22: case 23: case 27:case 28:case 39:case 40: case 56:
@@ -212,6 +213,7 @@ void MainFrame::print(QFile *qfile){
         case 44: case 46: case 47: case 52 ... 55:
             input = lineInputs[i-dropCount]->displayText();
             isInt = checkInteger(input);
+            //isPos = checkPositive(input);
             if(isInt){
                 printX = printX + label[i]->text() + input + "\n";
                 lineCount++;
@@ -259,7 +261,18 @@ bool MainFrame::checkInteger(QString input){
     }
     return true;
 }
-
+/*
+bool MainFrame::checkPositive(QString input){
+    bool isNeg = false;
+    if(input.size() == 0){
+        return false;
+    }
+    if(input[0] == '-'){
+        isNeg = true;
+    }
+    return isNeg;
+}
+*/
 MainFrame::~MainFrame()
 {
     delete ui;
