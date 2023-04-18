@@ -25,99 +25,93 @@ MainFrame::MainFrame(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //number of variables
-    numOfVar = sizeof(listOfVar)/sizeof(const char*);
-
     //main scroll area
-    QScrollArea *scrollArea = new QScrollArea;
+    QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
 
     //widget that holds the scroll area
-    scrollWidget = new QWidget;
+    scrollWidget = new QWidget(this);
     scrollLayout = new QVBoxLayout(scrollWidget);
     scrollArea->setWidget(scrollWidget);
     scrollWidget->setLayout(scrollLayout);
     scrollArea->setStyleSheet("QScrollBar:horizontal { width: 5px; }");
 
     //layouts inside the scroll area
-    int lineCount = 0;
-    int dropCount = 0;
-    for(int i = 0; i < numOfVar; i++){
-        entries[i] = new QWidget(scrollWidget);
-        layouts[i] = new QHBoxLayout(entries[i]);
-        label[i] = new QLabel(tr(listOfVar[i]));
-        //switch statement for qline and qcombobox
+    for(int i = EXOMODE; i <= BLOCKTYPE_1; i++){
+        entriesi.insert(i,new QWidget(scrollWidget));
+        layoutsi.insert(i,new QHBoxLayout(entriesi[i]));
+        labeli.insert(i,new QLabel(listOfVar[i] + " = "));
         switch(i){
-        case 0:
-            printDropItems(exomodeEntries, exomodeSize, i, lineCount);
-            dropCount++;
+        case EXOMODE:
+            printDropItems(exomodeEntries, exomodeSize, i);
             break;
-        case 1:
-            printDropItems(displayEntries, displaySize, i, lineCount);
-            dropCount++;
+        case DISPLAY:
+            printDropItems(displayEntries, displaySize, i);
             break;
-        case 6:
-            printDropItems(modelEntries, modelSize, i, lineCount);
-            dropCount++;
+        case MODEL:
+            printDropItems(modelEntries, modelSize, i);
             break;
-        case 8:
-            printDropItems(methodEntries, methodSize, i, lineCount);
-            dropCount++;
+        case METHOD:
+            printDropItems(methodEntries, methodSize, i);
             break;
-        case 10:
-            printDropItems(meshtypeEntries, meshtypeSize, i, lineCount);
-            dropCount++;
+        case MESHTYPE:
+            printDropItems(meshtypeEntries, meshtypeSize, i);
             break;
-        case 11: case 22: case 28:
-            printDropItems(boolEntries, boolSize, i, lineCount);
-            dropCount++;
+        case SAVEMESH: case FREESURF: case SAVESRC:
+            printDropItems(boolEntries, boolSize, i);
             break;
-        case 19:
-            printDropItems(tsmethodEntries, tsmethodSize, i, lineCount);
-            dropCount++;
+        case DGTYPE:
+            printDropItems(dgtypeEntries, dgtypeSize, i);
             break;
-        case 23:
-            printDropItems(bcEntries, bcSize, i, lineCount);
-            dropCount++;
+        case BASISTYPE:
+            printDropItems(basistypeEntries, basistypeSize, i);
             break;
-        case 27:
-            printDropItems(srctypeEntries, srctypeSize, i, lineCount);
-            dropCount++;
+        case ENRICHTYPE:
+            printDropItems(basistypeEntries, basistypeSize, i);
             break;
-        case 39:
-            printDropItems(snapshfmtEntries, snapshfmtSize, i, lineCount);
-            dropCount++;
+        case TSMETHOD:
+            printDropItems(tsmethodEntries, tsmethodSize, i);
             break;
-        case 40:
-            printDropItems(dxuseisEntries, dxuseisSize, i, lineCount);
-            dropCount++;
+        case BC:
+            printDropItems(bcEntries, bcSize, i);
             break;
-        case 56:
-            printDropItems(blocktype_1Entries, blocktype_1Size, i, lineCount);
-            dropCount++;
+        case SRCTYPE:
+            printDropItems(srctypeEntries, srctypeSize, i);
+            break;
+        case SNAPSHFMT:
+            printDropItems(snapshfmtEntries, snapshfmtSize, i);
+            break;
+        case DXUSEIS:
+            printDropItems(dxuseisEntries, dxuseisSize, i);
+            break;
+        case BLOCKTYPE_1:
+            printDropItems(blocktype_1Entries, blocktype_1Size, i);
             break;
         default:
-            lineInputs[i-dropCount] = new QLineEdit;
-            layouts[i]->addWidget(label[i]);
-            layouts[i]->addWidget(lineInputs[i-dropCount]);
-            scrollLayout->addWidget(entries[i]);
-            lineCount++;
+            lineInputsi.insert(i-dropCountLayout, new QLineEdit);
+            layoutsi[i]->addWidget(labeli[i]);
+            layoutsi[i]->addWidget(lineInputsi[i-dropCountLayout]);
+            scrollLayout->addWidget(entriesi[i]);
+            lineCountLayout++;
             break;
         }
     }
 
     //buttons
-    selectButton = new QPushButton(tr("Select File"));
-    saveButton = new QPushButton(tr("Save"));
-    newButton = new QPushButton(tr("New"));
+    selectButton = new QPushButton(tr("Select File"), this);
+    refreshButton = new QPushButton(tr("Refresh"), this);
+    saveButton = new QPushButton(tr("Save"), this);
+    newButton = new QPushButton(tr("New"), this);
 
     connect(selectButton, &QPushButton::clicked, this, &MainFrame::openFile);
+    connect(refreshButton, &QPushButton::clicked, this, &MainFrame::refresh);
     connect(saveButton, &QPushButton::clicked, this, &MainFrame::saveFile);
     connect(newButton, &QPushButton::clicked, this, &MainFrame::newFile);
 
     //Layout
     QHBoxLayout *selectLayout = new QHBoxLayout;
     selectLayout->addWidget(selectButton);
+    selectLayout->addWidget(refreshButton);
 
     QHBoxLayout *saveNewLayout = new QHBoxLayout;
     saveNewLayout->addWidget(saveButton);
@@ -141,9 +135,7 @@ void MainFrame::saveFile(){
 }
 
 void MainFrame::newFile(){
-
     QString fileName = QFileDialog::getSaveFileName(this,tr("Save Text"), "",tr("Text (*.txt);;All Files (*)"));
-
     if(fileName.isEmpty())
                 return;
             else{
@@ -166,9 +158,7 @@ void MainFrame::openFile(){
     QString line[numOfVar];
     QString inp[numOfVar];
     QString outputs[numOfVar];
-    int lineCount = 0;
-    int dropCount = 0;
-    for(int i=0; i<numOfVar; i++)
+    for(int i = EXOMODE; i <= BLOCKTYPE_1; i++)
     {
         line[i]  = in.readLine();
         inp[i].append(line[i]);
@@ -176,57 +166,131 @@ void MainFrame::openFile(){
         outputs[i] = partString.at(1);
         int index;
         switch(i){
-        case 0: case 1: case 6: case 8: case 10: case 11: case 19:
-        case 22: case 23: case 27:case 28:case 39:case 40: case 56:
+        case EXOMODE: case DISPLAY: case MODEL: case METHOD: case MESHTYPE: case SAVEMESH: case DGTYPE: case BASISTYPE: case ENRICHTYPE:
+        case TSMETHOD: case FREESURF: case BC: case SRCTYPE: case SAVESRC: case SNAPSHFMT: case DXUSEIS: case BLOCKTYPE_1:
             index = outputs[i].toInt();
-            dropInputs[i-lineCount]->setCurrentIndex(index);
-            dropCount++;
+            dropInputsi[i-lineCountOpen]->setCurrentIndex(index);
+            dropCountOpen++;
             break;
         default:
-            lineInputs[i-dropCount]->setText(outputs[i]);
-            lineCount++;
+            lineInputsi[i-dropCountOpen]->setText(outputs[i]);
+            lineCountOpen++;
             break;
+        }
+    }
+}
+
+void MainFrame::refresh(){
+    QString nReps = lineInputsi[31]->text();
+    int numReps = nReps.toInt();
+    if(numOfVar > NUMVAR){
+        do{
+            entriesi.removeLast();
+            layoutsi.removeLast();
+            labeli.removeLast();
+            lineInputsi.removeLast();
+            lineCountLayout--;
+            numOfVar--;
+        }while(numOfVar > NUMVAR);
+    }
+
+    if(numReps > 0){
+        for(int l = 0; l < numReps; l++){
+            entriesi.insert(NUMVAR + l,new QWidget(scrollWidget));
+            layoutsi.insert(NUMVAR + l,new QHBoxLayout(entriesi[NUMVAR + l]));
+            labeli.insert(NUMVAR + l,new QLabel(listOfVar[X_1] + " = "));
+            lineInputsi.insert(NUMVAR + l -dropCountLayout, new QLineEdit);
+            layoutsi[NUMVAR + l]->addWidget(labeli[NUMVAR + l]);
+            layoutsi[NUMVAR + l]->addWidget(lineInputsi[NUMVAR + l -dropCountLayout]);
+            scrollLayout->addWidget(entriesi[NUMVAR + l]);
+            lineCountLayout++;
+            numOfVar++;
         }
     }
 }
 
 void MainFrame::print(QFile *qfile){
     QString printX;
-    int lineCount = 0;
-    int dropCount = 0;
-
-    for(int i=0; i<numOfVar; i++){
+    for(int i = EXOMODE; i <= BLOCKTYPE_1; i++){
         int index;
         QString input;
         QMessageBox errorMessage;
         bool isInt;
-        //bool isPos;
+        bool isCord;
+        bool isTensor;
         switch(i){
-        case 0: case 1: case 6: case 8: case 10: case 11: case 19:
-        case 22: case 23: case 27:case 28:case 39:case 40: case 56:
-            index = dropInputs[i-lineCount]->currentIndex();
-            printX = printX + label[i]->text() + QString::number(index) + "\n";
-            dropCount++;
+        case EXOMODE: case DISPLAY: case MODEL: case METHOD: case MESHTYPE: case SAVEMESH: case DGTYPE: case BASISTYPE: case ENRICHTYPE:
+        case TSMETHOD: case FREESURF: case BC: case SRCTYPE: case SAVESRC: case SNAPSHFMT: case DXUSEIS: case BLOCKTYPE_1:
+            index = dropInputsi[i-lineCountPrint]->currentIndex();
+            printX = printX + labeli[i]->text() + QString::number(index) + "\n";
+            dropCountPrint++;
             break;
-        case 4: case 7: case 9: case 13: case 17: case 20: case 21:
-        case 24: case 25: case 26: case 29 ... 34: case 38: case 41:
-        case 44: case 46: case 47: case 52 ... 55:
-            input = lineInputs[i-dropCount]->displayText();
+        case LOGFILE: case OUTDIR:
+            input = lineInputsi[i-dropCountPrint]->displayText();
             isInt = checkInteger(input);
-            //isPos = checkPositive(input);
-            if(isInt){
-                printX = printX + label[i]->text() + input + "\n";
-                lineCount++;
+            if(!isInt){
+                printX = printX + labeli[i]->text() + input + "\n";
+                lineCountPrint++;
             }else{
-                errorMessage.setText("The variable "+label[i]->text()+" only recives integers");
+                errorMessage.setText("The variable "+labeli[i]->text()+" only recives string");
+                errorMessage.exec();
+                return;
+            }
+            break;
+        case DTSAVE: case DGPENALTY: case TMAX: case CFL: case TAPALPHA: case TAPBETA: case TWIDTH: case PKFREQ: case SRCAMP:
+        case X_1 ... Z_1: case VMAX_1 ... RHO_1://0.2
+            input = lineInputsi[i-dropCountPrint]->displayText();
+            isInt = checkInteger(input);
+            if(!isInt){
+                printX = printX + labeli[i]->text() + input + "\n";
+                lineCountPrint++;
+            }else{
+                errorMessage.setText("The variable "+labeli[i]->text()+" only recives real numbers");
+                errorMessage.exec();
+                return;
+            }
+            break;
+        case SWIDTH: case SRCLOC: case SRCVECTOR: case REC0: case RECD: case SEISMOi: case NELEM_1:
+            input = lineInputsi[i-dropCountPrint]->displayText();
+            isCord = checkXYZCordinates(input);
+            if(isCord){
+                printX = printX + labeli[i]->text() + input + "\n";
+                lineCountPrint++;
+            }else{
+                errorMessage.setText("The variable "+labeli[i]->text()+" only recives 3d coordinates (x,y,z)");
+                errorMessage.exec();
+                return;
+            }
+            break;
+        case SRCTENSOR:
+            input = lineInputsi[i-dropCountPrint]->displayText();
+            isTensor = checkTensor(input);
+            if(isTensor){
+                printX = printX + labeli[i]->text() + input + "\n";
+                lineCountPrint++;
+            }else{
+                errorMessage.setText("The variable "+labeli[i]->text()+" only recives 6 components (xx,yy,zz,xy,xz,yz)");
+                errorMessage.exec();
+                return;
+            }
+            break;
+        case NTSAVE: case DIMENSIONS: case FEMORD: case ENRICHORD: case TAPERLEN: case SRCFUNC: case SHOTS: case SNAPSHRES: case NREC:
+        case NSEISMO: case MESHFAC: case NBLOCKS:
+            input = lineInputsi[i-dropCountPrint]->displayText();
+            isInt = checkInteger(input);
+            if(isInt){
+                printX = printX + labeli[i]->text() + input + "\n";
+                lineCountPrint++;
+            }else{
+                errorMessage.setText("The variable "+labeli[i]->text()+" only recives integers");
                 errorMessage.exec();
                 return;
             }
             break;
         default:
-            input = lineInputs[i-dropCount]->displayText();
-            printX = printX + label[i]->text() + input + "\n";
-            lineCount++;
+            input = lineInputsi[i-dropCountPrint]->displayText();
+            printX = printX + labeli[i]->text() + input + "\n";
+            lineCountPrint++;
             break;
         }
     }
@@ -234,24 +298,23 @@ void MainFrame::print(QFile *qfile){
     out << printX;
 }
 
-void MainFrame::printDropItems(const char ** entry, int arraySize, int index, int lnCount){
-    dropInputs[index-lnCount] = new QComboBox;
+void MainFrame::printDropItems(QList <QString> entry, int arraySize, int index){
+    dropInputsi.insert(index-lineCountLayout, new QComboBox);
     for(int j = 0; j < arraySize; j++){
-        dropInputs[index-lnCount]->addItem(QString(entry[j]));
+        dropInputsi[index-lineCountLayout]->addItem(QString(entry[j]));
     }
-    layouts[index]->addWidget(label[index]);
-    layouts[index]->addWidget(dropInputs[index-lnCount]);
-    scrollLayout->addWidget(entries[index]);
+    layoutsi[index]->addWidget(labeli[index]);
+    layoutsi[index]->addWidget(dropInputsi[index-lineCountLayout]);
+    scrollLayout->addWidget(entriesi[index]);
+    dropCountLayout++;
 }
 
 bool MainFrame::checkInteger(QString input){
-    //bool isNeg = false;
     int itr = 0;
     if(input.size() == 0){
         return false;
     }
     if(input[0] == '-'){
-        //isNeg = true;
         itr = 1;
     }
     for(int i=itr; i<input.size(); i++){
@@ -261,7 +324,7 @@ bool MainFrame::checkInteger(QString input){
     }
     return true;
 }
-/*
+
 bool MainFrame::checkPositive(QString input){
     bool isNeg = false;
     if(input.size() == 0){
@@ -272,7 +335,44 @@ bool MainFrame::checkPositive(QString input){
     }
     return isNeg;
 }
-*/
+
+bool MainFrame::checkFloat(QString input){
+    bool isFloat = false;
+    if(input.contains(".")){
+        isFloat = true;
+    }
+    return isFloat;
+}
+
+bool MainFrame::checkXYZCordinates(QString input){
+    bool isXYZ = false;
+    int space = 0;
+    for(int i=0; i<input.size(); i++){
+        if(input[i] == ' '){
+            space++;
+        }
+    }
+
+    if(space == 2){
+        isXYZ = true;
+    }
+    return isXYZ;
+}
+
+bool MainFrame::checkTensor(QString input){
+    bool isTensor = false;
+    int space = 0;
+    for(int i=0; i<input.size(); i++){
+        if(input[i] == ' '){
+            space++;
+        }
+    }
+    if(space == 5){
+        isTensor = true;
+    }
+    return isTensor;
+}
+
 MainFrame::~MainFrame()
 {
     delete ui;
