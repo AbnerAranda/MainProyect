@@ -55,6 +55,8 @@ private:
     //print line counter
     int lineCountPrint = 0;
     int dropCountPrint = 0;
+    //Number of reptitions
+    QString nReps;
     //list of variables
     QList <QString> listOfVar {"EXOMODE"/*0*/,"DISPLAY"/*1*/,"LOGFILE"/*2*/,"OUTDIR"/*3*/,"NTSAVE"/*4*/,"DTSAVE"/*5*/,
                                "MODEL"/*6*/,"DIMENSIONS"/*7*/,"METHOD"/*8*/,"FEMORD"/*9*/,"MESHTYPE"/*10*/,"SAVEMESH"/*11*/,

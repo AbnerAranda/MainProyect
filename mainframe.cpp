@@ -147,123 +147,6 @@ void MainFrame::newFile(){
                 }
 }
 
-//function that reads file
-void MainFrame::openFile(){
-    QString fileName = QFileDialog::getOpenFileName(this, "Open a file", "/Users/abner/");
-    QFile data(fileName);
-    data.open(QFile::ReadOnly);
-
-    QTextStream in(&data);
-    QString line[numOfVar];
-    QString inp[numOfVar];
-    QString outputs[numOfVar];
-    lineCountOpen = 0;
-    dropCountOpen = 0;
-
-    for(int i = EXOMODE; i < NUMVAR; i++)
-    {
-        line[i]  = in.readLine();
-        inp[i].append(line[i]);
-        QStringList partString = inp[i].split(" = ");
-        outputs[i] = partString.at(1);
-        int index;
-        switch(i){
-        case EXOMODE: case DISPLAY: case MODEL: case METHOD: case MESHTYPE: case SAVEMESH: case DGTYPE: case BASISTYPE: case ENRICHTYPE:
-        case TSMETHOD: case FREESURF: case BC: case SRCTYPE: case SAVESRC: case SNAPSHFMT: case DXUSEIS:
-            index = outputs[i].toInt();
-            dropInputsi[i-lineCountOpen]->setCurrentIndex(index);
-            dropCountOpen++;
-            break;
-        default:
-            lineInputsi[i-dropCountOpen]->setText(outputs[i]);
-            lineCountOpen++;
-            break;
-        }
-    }
-    QString nReps = lineInputsi[31]->text();
-    numReps = nReps.toInt();
-    //reading the blocks
-    if(numReps > 0){
-        //refresh();
-        //reading the blocks
-        for(int l = 1; l <= numReps; l++){
-            int s = 1;
-            for(int v = 1; v <= 9; v++){
-                line[NBLOCKS + 9*l - 9 + s]  = in.readLine();
-                inp[NBLOCKS + 9*l - 9 + s].append(line[NBLOCKS + 9*l - 9 + s]);
-                QStringList partString = inp[NBLOCKS + 9*l - 9 + s].split(" = ");
-                outputs[NBLOCKS + 9*l - 9 + s] = partString.at(1);
-                int index;
-                switch (v) {
-                case 9:
-                    index = outputs[NBLOCKS + 9*l - 9 + s].toInt();
-                    dropInputsi[NBLOCKS + 9*l - 9 + s-lineCountOpen]->setCurrentIndex(index);
-                    dropCountOpen++;
-                    break;
-                default:
-                    lineInputsi[NBLOCKS + 9*l - 9 + s-dropCountOpen]->setText(outputs[NBLOCKS + 9*l - 9 + s]);
-                    lineCountOpen++;
-                    break;
-                }
-                s++;
-            }
-        }
-    }else{
-        return;
-    }
-}
-
-//New function that actualizes the interface
-void MainFrame::refresh(){
-    QString nReps = lineInputsi[31]->text();
-    numReps = nReps.toInt();
-    if(numOfVar > NUMVAR){
-        do{
-            QWidget *temp = entriesi.last();
-            delete(temp);
-            entriesi.removeLast();
-            layoutsi.removeLast();
-            labeli.removeLast();
-            lineInputsi.removeLast();
-            lineCountLayout--;
-            numOfVar--;
-        }while(numOfVar > NUMVAR);
-    }
-//Creates the new labels and inputs entrances
-    if(numReps > 0){
-        for(int l = 1; l <= numReps; l++){
-            int s = 1;
-            for(int v = NUMVAR; v <= (NUMVAR + 8); v++){
-                entriesi.insert(NBLOCKS + 9*l - 9 + s,new QWidget(scrollWidget));
-                layoutsi.insert(NBLOCKS + 9*l - 9 + s,new QHBoxLayout(entriesi[NBLOCKS + 9*l - 9 + s]));
-                switch(v){
-                case (NUMVAR + 8):
-                    dropInputsi.insert(NBLOCKS + 9*l - 9 + s-lineCountLayout, new QComboBox);
-                    for(int j = 0; j < blocktype_1Size; j++){
-                        dropInputsi[NBLOCKS + 9*l - 9 + s-lineCountLayout]->addItem(QString(blocktype_1Entries[j]));
-                    }
-                    labeli.insert(NBLOCKS + 9*l - 9 + s,new QLabel(listOfVar[v] + QString::number(l) + " = "));
-                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(labeli[NBLOCKS + 9*l - 9 + s]);
-                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(dropInputsi[NBLOCKS + 9*l - 9 + s-lineCountLayout]);
-                    scrollLayout->addWidget(entriesi[NBLOCKS + 9*l - 9 + s]);
-                    dropCountLayout++;
-                    break;
-                default:
-                    labeli.insert(NBLOCKS + 9*l - 9 + s,new QLabel(listOfVar[v] + QString::number(l) + " = "));
-                    lineInputsi.insert(NBLOCKS + 9*l - 9 + s -dropCountLayout, new QLineEdit);
-                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(labeli[NBLOCKS + 9*l - 9 + s]);
-                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(lineInputsi[NBLOCKS + 9*l - 9 + s -dropCountLayout]);
-                    scrollLayout->addWidget(entriesi[NBLOCKS + 9*l - 9 + s]);
-                    lineCountLayout++;
-                    break;
-                }
-                numOfVar++;
-                s++;
-            }
-        }
-    }
-}
-
 void MainFrame::print(QFile *qfile){
     QString printX;
     lineCountPrint = 0;
@@ -400,6 +283,127 @@ void MainFrame::print(QFile *qfile){
     QTextStream out(qfile);
     out << printX;
 }
+
+//New function that actualizes the interface
+void MainFrame::refresh(){
+    nReps = lineInputsi[31]->text();
+    numReps = nReps.toInt();
+    //numReps = 2;
+    if(numOfVar > NUMVAR){
+        do{
+            QWidget *temp = entriesi.last();
+            delete(temp);
+            entriesi.removeLast();
+            layoutsi.removeLast();
+            labeli.removeLast();
+            lineInputsi.removeLast();
+            lineCountLayout--;
+            numOfVar--;
+        }while(numOfVar > NUMVAR);
+    }
+//Creates the new labels and inputs entrances
+    if(numReps > 0){
+        for(int l = 1; l <= numReps; l++){
+            int s = 1;
+            for(int v = NUMVAR; v <= (NUMVAR + 8); v++){
+                entriesi.insert(NBLOCKS + 9*l - 9 + s,new QWidget(scrollWidget));
+                layoutsi.insert(NBLOCKS + 9*l - 9 + s,new QHBoxLayout(entriesi[NBLOCKS + 9*l - 9 + s]));
+                switch(v){
+                case (NUMVAR + 8):
+                    dropInputsi.insert(NBLOCKS + 9*l - 9 + s-lineCountLayout, new QComboBox);
+                    for(int j = 0; j < blocktype_1Size; j++){
+                        dropInputsi[NBLOCKS + 9*l - 9 + s-lineCountLayout]->addItem(QString(blocktype_1Entries[j]));
+                    }
+                    labeli.insert(NBLOCKS + 9*l - 9 + s,new QLabel(listOfVar[v] + QString::number(l) + " = "));
+                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(labeli[NBLOCKS + 9*l - 9 + s]);
+                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(dropInputsi[NBLOCKS + 9*l - 9 + s-lineCountLayout]);
+                    scrollLayout->addWidget(entriesi[NBLOCKS + 9*l - 9 + s]);
+                    dropCountLayout++;
+                    break;
+                default:
+                    labeli.insert(NBLOCKS + 9*l - 9 + s,new QLabel(listOfVar[v] + QString::number(l) + " = "));
+                    lineInputsi.insert(NBLOCKS + 9*l - 9 + s -dropCountLayout, new QLineEdit);
+                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(labeli[NBLOCKS + 9*l - 9 + s]);
+                    layoutsi[NBLOCKS + 9*l - 9 + s]->addWidget(lineInputsi[NBLOCKS + 9*l - 9 + s -dropCountLayout]);
+                    scrollLayout->addWidget(entriesi[NBLOCKS + 9*l - 9 + s]);
+                    lineCountLayout++;
+                    break;
+                }
+                numOfVar++;
+                s++;
+            }
+        }
+    }
+}
+
+//function that reads file
+void MainFrame::openFile(){
+    QString fileName = QFileDialog::getOpenFileName(this, "Open a file", "/Users/abner/");
+    QFile data(fileName);
+    data.open(QFile::ReadOnly);
+
+    QTextStream in(&data);
+    QList <QString> line;
+    QList <QString> inp;
+    QList <QString> outputs;
+    lineCountOpen = 0;
+    dropCountOpen = 0;
+
+    //original lines
+    for(int i = EXOMODE; i < NUMVAR; i++)
+    {
+        line.append(in.readLine());//reading the line
+        inp.append(line[i]);//the inputs
+        QStringList partString = inp[i].split(" = ");
+        outputs.append(partString.at(1));
+        int index;
+        switch(i){
+        case EXOMODE: case DISPLAY: case MODEL: case METHOD: case MESHTYPE: case SAVEMESH: case DGTYPE: case BASISTYPE: case ENRICHTYPE:
+        case TSMETHOD: case FREESURF: case BC: case SRCTYPE: case SAVESRC: case SNAPSHFMT: case DXUSEIS:
+            index = outputs[i].toInt();
+            dropInputsi[i-lineCountOpen]->setCurrentIndex(index);
+            dropCountOpen++;
+            break;
+        default:
+            lineInputsi[i-dropCountOpen]->setText(outputs[i]);
+            lineCountOpen++;
+            break;
+        }
+    }
+    nReps = lineInputsi[31]->text();
+    numReps = nReps.toInt();
+    refresh();
+    //open block
+    if(numReps > 0){
+        //reading the blocks
+        for(int l = 1; l <= numReps; l++){
+            int s = 1;
+            for(int v = 1; v <= 9; v++){
+                int indice = NBLOCKS + 9*l - 9 + s;
+                line.append(in.readLine());
+                inp.append(line[indice]);
+                QStringList partString = inp[indice].split(" = ");
+                outputs.append(partString.at(1));
+                int index;
+                switch (v) {
+                case 9:
+                    index = outputs[indice].toInt();
+                    dropInputsi[indice-lineCountOpen]->setCurrentIndex(index);
+                    dropCountOpen++;
+                    break;
+                default:
+                    lineInputsi[indice-dropCountOpen]->setText(outputs[indice]);
+                    lineCountOpen++;
+                    break;
+                }
+                s++;
+            }
+        }
+    }else{
+        return;
+    }
+}
+
 
 void MainFrame::printDropItems(QList <QString> entry, int arraySize, int index){
     dropInputsi.insert(index-lineCountLayout, new QComboBox);
